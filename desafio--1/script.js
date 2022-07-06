@@ -85,7 +85,7 @@ if(tipoOperacion === "short"){
     for(let i = 1; i <= numeroRecomprasTotales; i++){
         cotizacionMonedaRecompraActual = ((cotizacionMonedaRecompraActual * distanciaRecompra) / 100) + cotizacionMonedaRecompraActual;
         cantidadMonedasRecompraActual = ((cantidadMonedasRecompraActual * montoPorRecompra) / 100) + cantidadMonedasRecompraActual;
-        montoInvertidoEnUSDTActual = cotizacionMonedaRecompraActual * cantidadMonedasRecompraActual;
+        montoInvertidoEnUSDTActual = montoTotalInvertido(cotizacionMonedaRecompraActual, cantidadMonedasRecompraActual);
 
         console.log(`${i}        $${cotizacionMonedaRecompraActual.toFixed(3)}        ${cantidadMonedasRecompraActual.toFixed(2)}        $${montoInvertidoEnUSDTActual.toFixed(3)}`);
     }
@@ -105,7 +105,7 @@ if(tipoOperacion === "short"){
     for(let i = 1; i <= numeroRecomprasTotales; i++){
         cotizacionMonedaRecompraActual = cotizacionMonedaRecompraActual - ((cotizacionMonedaRecompraActual * distanciaRecompra) / 100);
         cantidadMonedasRecompraActual = ((cantidadMonedasRecompraActual * montoPorRecompra) / 100) + cantidadMonedasRecompraActual;
-        montoInvertidoEnUSDTActual = cotizacionMonedaRecompraActual * cantidadMonedasRecompraActual;
+        montoInvertidoEnUSDTActual = montoTotalInvertido(cotizacionMonedaRecompraActual, cantidadMonedasRecompraActual);
 
         console.log(`${i}        $${cotizacionMonedaRecompraActual.toFixed(3)}        ${cantidadMonedasRecompraActual.toFixed(3)}        $${montoInvertidoEnUSDTActual.toFixed(2)}`);
 
