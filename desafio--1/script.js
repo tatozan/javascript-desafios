@@ -25,6 +25,25 @@ proceso
 
 
 */
+
+/*function redondear(numero, numeroDecimales){
+    if (typeof numero != 'number' || typeof numeroDecimales != 'number'){
+        return null;
+    }
+
+    let signo = numero >= 0? 1 : -1;
+
+    return (Math.round((numero * Math.pow(10, numeroDecimales)) + (signo * 0.0001)) / Math.pow(10, numeroDecimales)).toFixed(numeroDecimales);
+}
+*/
+function calculoRecompras(pSlPorcentaje, pDistanciaRecompra){
+    return pSlPorcentaje / pDistanciaRecompra;
+}
+
+function montoTotalInvertido(pCotizacionMoneda, pCantidadMonedaPrimeraCompra){
+    return pCotizacionMoneda * pCantidadMonedaPrimeraCompra;
+}
+
 let tipoOperacion, distanciaRecompra, montoPorRecompra, slUSDT, cotizacionMoneda, cantidadMonedaPrimeraCompra;
 let montoInvertidoEnUSDT;
 let slPorcentaje;
@@ -37,13 +56,14 @@ slPorcentaje = parseInt(prompt("Ingrese el porcentaje de SL en numeros, sin el %
 cotizacionMoneda = parseFloat(prompt("Ingrese precio de compra de moneda, la coma es con '.' "));
 cantidadMonedaPrimeraCompra = parseFloat(prompt("Ingrese el tamaño de la compra en monedas, la coma es con '.' "));
 
-montoInvertidoEnUSDT = cotizacionMoneda * cantidadMonedaPrimeraCompra;
-numeroRecomprasTotales = slPorcentaje / distanciaRecompra;
+montoInvertidoEnUSDT = montoTotalInvertido(cotizacionMoneda, cantidadMonedaPrimeraCompra);
+numeroRecomprasTotales = calculoRecompras(slPorcentaje, distanciaRecompra);
 
 //La calculadora no permite mas que calcular 8 recompras, mas recompras, no se recomienda
 if(numeroRecomprasTotales >= 8){
     numeroRecomprasTotales = 8;
 }
+
 
 let cotizacionMonedaRecompraActual = cotizacionMoneda;
 let cantidadMonedasRecompraActual = cantidadMonedaPrimeraCompra;
@@ -67,7 +87,7 @@ if(tipoOperacion === "short"){
         cantidadMonedasRecompraActual = ((cantidadMonedasRecompraActual * montoPorRecompra) / 100) + cantidadMonedasRecompraActual;
         montoInvertidoEnUSDTActual = cotizacionMonedaRecompraActual * cantidadMonedasRecompraActual;
 
-        console.log(`${i}        $${cotizacionMonedaRecompraActual.toFixed(3)}        ${cantidadMonedasRecompraActual.toFixed(3)}        $${montoInvertidoEnUSDTActual.toFixed(2)}`);
+        console.log(`${i}        $${cotizacionMonedaRecompraActual.toFixed(3)}        ${cantidadMonedasRecompraActual.toFixed(2)}        $${montoInvertidoEnUSDTActual.toFixed(3)}`);
     }
 } else if(tipoOperacion === "long"){
 
@@ -77,7 +97,7 @@ if(tipoOperacion === "short"){
     Monto invertido en dolares: $${montoInvertidoEnUSDT}
     Tamaño compra: ${cantidadMonedaPrimeraCompra} monedas
     Tipo de operacion: ${tipoOperacion}
-    
+
     `)
 
     console.log(`#--------PRECIO--------MONEDAS--------USDT`);
