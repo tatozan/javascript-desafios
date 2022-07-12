@@ -1,0 +1,6 @@
+{
+    "files.exclude": {
+        "**/.svn": false,
+        "**/CVS": false
+    }
+}
