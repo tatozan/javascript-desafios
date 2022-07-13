@@ -110,6 +110,42 @@ if(operaciones[0].tipoOperacion === "short"){
 
     console.log(`#--------PRECIO--------MONEDAS--------USDT`);
 
+    
+    /*do{
+        let i = i + 1;
+
+        //creo una variable nroOperacion y nroOperacionAnterior para que sea mas legible
+        let nroOperacion = i;
+        let nroOperacionAnterior = i-1;
+        let precioMoneda = ((operaciones[nroOperacionAnterior].precioMoneda * operaciones[nroOperacionAnterior].distanciaPorcentajeRecompraReventa) / 100) + operaciones[nroOperacionAnterior].precioMoneda;
+        let cantidadMonedas = ((operaciones[nroOperacionAnterior].cantidadMonedas * operaciones[nroOperacionAnterior].aumentoPorcentajeRecompraReventa) / 100) + operaciones[nroOperacionAnterior].cantidadMonedas;
+
+        const operacion = new Operacion(nroOperacion, "short", operaciones[0].distanciaPorcentajeRecompraReventa, operaciones[0].aumentoPorcentajeRecompraReventa, operaciones[0].sl, precioMoneda, cantidadMonedas);
+        //metodo eval: evalua un string que se le pasa como arguemento y lo analiza como codigo de js, luego lo ejecuta
+        //eval('const operacion' + nroOperacion + ' = ' + 'new Operacion(nroOperacion, "short", operaciones[' + nroOperacionAnterior + '].distanciaPorcentajeRecompraReventa, operaciones[' + nroOperacionAnterior + '].aumentoPorcentajeRecompraReventa, operaciones[' + nroOperacionAnterior + '].sl, precioMoneda, cantidadMonedas);');
+        //operaciones.push(eval('operacion' + nroOperacion));
+
+        operaciones.push(operacion);
+        operaciones[nroOperacion].calcularMontoTotalInvertido(precioMoneda, cantidadMonedas);
+
+        let porcentajeTotalOperaciones = porcentajeTotalOperaciones + operaciones[nroOperacion].distanciaPorcentajeRecompraReventa;
+        precioMonedaAcum = precioMonedaAcum + operaciones[nroOperacion].precioMoneda;
+        montoInvertidoAcum += operaciones[nroOperacion].montoInvertidoEnUSDT;
+        cantidadMonedasAcum += operaciones[nroOperacion].cantidadMonedas;
+
+
+        operaciones[nroOperacion].calcularMontoTotalInvertido(operaciones[nroOperacion].precioMoneda, operaciones[nroOperacion].cantidadMonedas);
+            
+        console.log(`${nroOperacion}        $${operaciones[nroOperacion].precioMoneda.toFixed(3)}        ${operaciones[nroOperacion].cantidadMonedas.toFixed(3)}        $${operaciones[nroOperacion].montoInvertidoEnUSDT.toFixed(2)}`);
+        
+        //formula calculo precio de moneda cuando toca SL que elegi como dato de entrada en USDT.
+        precioMonedaEnSl = precioMonedaAcum + (operaciones[0].sl / cantidadMonedasAcum);
+
+        //formula calculo distancia de mi operacion #0 al monto de SL que quiero perder, en porcentaje
+        porcentajeDistanciaSl = (precioMonedaEnSl - operaciones[0].precioMoneda) / operaciones[0].precioMoneda;
+          
+    } while(porcentajeDistanciaSL);*/
+
     for(let i = 1; i <= operaciones[0].numeroRecomprasTotales; i++){   
         //creo una variable nroOperacion y nroOperacionAnterior para que sea mas legible
         let nroOperacion = i;
@@ -118,8 +154,18 @@ if(operaciones[0].tipoOperacion === "short"){
         let cantidadMonedas = ((operaciones[nroOperacionAnterior].cantidadMonedas * operaciones[nroOperacionAnterior].aumentoPorcentajeRecompraReventa) / 100) + operaciones[nroOperacionAnterior].cantidadMonedas;
 
         const operacion = new Operacion(nroOperacion, "short", operaciones[0].distanciaPorcentajeRecompraReventa, operaciones[0].aumentoPorcentajeRecompraReventa, operaciones[0].sl, precioMoneda, cantidadMonedas);
+        //metodo eval: evalua un string que se le pasa como arguemento y lo analiza como codigo de js, luego lo ejecuta
+        //eval('const operacion' + nroOperacion + ' = ' + 'new Operacion(nroOperacion, "short", operaciones[' + nroOperacionAnterior + '].distanciaPorcentajeRecompraReventa, operaciones[' + nroOperacionAnterior + '].aumentoPorcentajeRecompraReventa, operaciones[' + nroOperacionAnterior + '].sl, precioMoneda, cantidadMonedas);');
+        //operaciones.push(eval('operacion' + nroOperacion));
+
         operaciones.push(operacion);
         operaciones[nroOperacion].calcularMontoTotalInvertido(precioMoneda, cantidadMonedas);
+
+        /*let porcentajeTotalOperaciones = porcentajeTotalOperaciones + operaciones[nroOperacion].distanciaPorcentajeRecompraReventa;*/
+        /*precioMonedaAcum = precioMonedaAcum + operaciones[nroOperacion].precioMoneda;
+        montoInvertidoAcum += operaciones[nroOperacion].montoInvertidoEnUSDT;
+        cantidadMonedasAcum += operaciones[nroOperacion].cantidadMonedas;*/
+
 
         operaciones[nroOperacion].calcularMontoTotalInvertido(operaciones[nroOperacion].precioMoneda, operaciones[nroOperacion].cantidadMonedas);
             
@@ -127,28 +173,32 @@ if(operaciones[0].tipoOperacion === "short"){
        
     }
 
-} else if(operaciones[0].tipoOperacion === "long"){
+    /*//formula calculo precio de moneda cuando toca SL que elegi como dato de entrada en USDT.
+    precioMonedaEnSl = precioMonedaAcum + (operaciones[0].sl / cantidadMonedasAcum);
 
-    operaciones[0].mostrarDatosOperacion();
+    //formula calculo distancia de mi operacion #0 al monto de SL que quiero perder, en porcentaje
+    porcentajeDistanciaSl = (precioMonedaEnSl - operaciones[0].precioMoneda) / operaciones[0].precioMoneda;
+
+    console.log(`SL(${porcentajeDistanciaSl}%)
+    Precio moneda al tocar SL: ${precioMonedaEnSl}
+    Cantidad de monedas compradas utilizando todas las recompras: ${cantidadMonedasAcum}
+    Monto total invertido utilizando todas las recompras: ${montoInvertidoAcum}`);*/
+
+} else if(tipoOperacion === "long"){
+
+    operacion1.mostrarDatosOperacion();
 
     console.log(`#--------PRECIO--------MONEDAS--------USDT`);
 
-    for(let i = 1; i <= operaciones[0].numeroRecomprasTotales; i++){
+    for(let i = 1; i <= numeroRecomprasTotales; i++){
 
-       //creo una variable nroOperacion y nroOperacionAnterior para que sea mas legible
-       let nroOperacion = i;
-       let nroOperacionAnterior = i-1;
-       let precioMoneda = -((operaciones[nroOperacionAnterior].precioMoneda * operaciones[nroOperacionAnterior].distanciaPorcentajeRecompraReventa) / 100) + operaciones[nroOperacionAnterior].precioMoneda;
-       let cantidadMonedas = ((operaciones[nroOperacionAnterior].cantidadMonedas * operaciones[nroOperacionAnterior].aumentoPorcentajeRecompraReventa) / 100) + operaciones[nroOperacionAnterior].cantidadMonedas;
+        precioMonedaRecompraActual = precioMonedaRecompraActual - ((precioMonedaRecompraActual * distanciaPorcentajeRecompraReventa) / 100);
+        /*precioMonedaRecompraActual = precioMonedaRecompraActual - ((precioMonedaRecompraActual * distanciaRecompra) / 100);
+        cantidadMonedasRecompraActual = ((cantidadMonedasRecompraActual * montoPorRecompra) / 100) + cantidadMonedasRecompraActual;
+        montoInvertidoEnUSDTActual = montoTotalInvertido(precioMonedaRecompraActual, cantidadMonedasRecompraActual);
 
-       const operacion = new Operacion(nroOperacion, "long", operaciones[0].distanciaPorcentajeRecompraReventa, operaciones[0].aumentoPorcentajeRecompraReventa, operaciones[0].sl, precioMoneda, cantidadMonedas);
-       operaciones.push(operacion);
-       operaciones[nroOperacion].calcularMontoTotalInvertido(precioMoneda, cantidadMonedas);
+        console.log(`${i}        $${precioMonedaRecompraActual.toFixed(2)}        ${cantidadMonedasRecompraActual.toFixed(3)}        $${montoInvertidoEnUSDTActual.toFixed(2)}`);*/
 
-       operaciones[nroOperacion].calcularMontoTotalInvertido(operaciones[nroOperacion].precioMoneda, operaciones[nroOperacion].cantidadMonedas);
-           
-       console.log(`${nroOperacion}        $${operaciones[nroOperacion].precioMoneda.toFixed(3)}        ${operaciones[nroOperacion].cantidadMonedas.toFixed(3)}        $${operaciones[nroOperacion].montoInvertidoEnUSDT.toFixed(2)}`);
-      
-   }
+    }
 }
 
