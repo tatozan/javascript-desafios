@@ -71,6 +71,8 @@ class Operacion{
 let tipoOperacion, distanciaPorcentajeRecompraReventa, aumentoPorcentajeRecompraReventa, sl, precioMoneda, cantidadMonedas;
 let montoInvertido;
 let numeroRecomprasTotales;
+let mostrarListaInvertida;
+
 //contiene las operaciones, de recompra o reventa, incluida compra/venta incial
 const operaciones = [];
 
@@ -78,11 +80,16 @@ const operaciones = [];
 const operacionesProm = [];
 
 tipoOperacion = prompt("Ingrese tipo de operacion short / long").toLowerCase();
-distanciaPorcentajeRecompraReventa = parseInt(prompt("Ingrese el porcentaje de distancia de recompra, sin el %"));
-aumentoPorcentajeRecompraReventa = parseInt(prompt("Ingrese el porcentaje de aumento por c/ recompra, sin el %"));
-sl = parseInt(prompt("Ingrese el monto en USDT que desea perder como maximo en la operacion"));
+distanciaPorcentajeRecompraReventa = parseFloat(prompt("Ingrese el porcentaje de distancia de recompra, sin el %"));
+aumentoPorcentajeRecompraReventa = parseFloat(prompt("Ingrese el porcentaje de aumento por c/ recompra, sin el %"));
+sl = parseFloat(prompt("Ingrese el monto en USDT que desea perder como maximo en la operacion"));
 precioMoneda = parseFloat(prompt("Ingrese precio de compra de moneda, la coma es con '.' "));
 cantidadMonedas = parseFloat(prompt("Ingrese el tamaño de la compra en monedas, la coma es con '.' "));
+mostrarListaInvertida = prompt("Desea ver las operaciones de mayor a menor? SI - NO").toLowerCase();
+
+if (mostrarListaInvertida == "si"){
+    mostrarListaInvertida = true;
+}
 
 //creo objeto operacion0
 const operacion0 = new Operacion(0, tipoOperacion, distanciaPorcentajeRecompraReventa, aumentoPorcentajeRecompraReventa, sl, precioMoneda, cantidadMonedas);
@@ -106,7 +113,7 @@ if(operaciones[0].tipoOperacion === "short"){
 
     operaciones[0].mostrarDatosOperacion();
 
-    console.log(`#--------PRECIO--------MONEDAS--------USDT`);
+    //console.log(`#--------PRECIO--------MONEDAS--------USDT`);
 
     do{
         i += 1; 
@@ -152,13 +159,31 @@ if(operaciones[0].tipoOperacion === "short"){
             const operacionProm = new Operacion(nroOperacion, "short", operaciones[0].distanciaPorcentajeRecompraReventa, operaciones[0].aumentoPorcentajeRecompraReventa, operaciones[0].sl, precioMonedaProm, cantidadMonedasProm, inversionProm);
             operacionesProm.push(operacionProm);
             
-            console.log(`${nroOperacion}        $${operaciones[nroOperacion].precioMoneda.toFixed(3)}        ${operaciones[nroOperacion].cantidadMonedas.toFixed(3)}        $${operaciones[nroOperacion].montoInvertido.toFixed(2)}`);
+            //console.log(`${nroOperacion}        $${operaciones[nroOperacion].precioMoneda.toFixed(3)}        ${operaciones[nroOperacion].cantidadMonedas.toFixed(3)}        $${operaciones[nroOperacion].montoInvertido.toFixed(2)}`);
  
         }
         
         
     } while(pnl <= operaciones[0].sl && i < 8);
 
+    console.log(`#--------PRECIO--------MONEDAS--------USDT`);
+
+    if (mostrarListaInvertida == true){
+        const operacionesAux = operaciones;
+        
+        operacionesAux.sort( (operacion, operacion2) => operacion2.numeroOperacion - operacion.numeroOperacion);
+
+        operacionesAux.forEach(operacion => {
+            console.log(`${operacion.numeroOperacion}        $${operacion.precioMoneda.toFixed(3)}        ${operacion.cantidadMonedas.toFixed(3)}        $${operacion.montoInvertido.toFixed(2)}`);
+        });
+
+    } else{
+        operaciones.forEach(operacion => {
+            console.log(`${operacion.numeroOperacion}        $${operacion.precioMoneda.toFixed(3)}        ${operacion.cantidadMonedas.toFixed(3)}        $${operacion.montoInvertido.toFixed(2)}`);
+        });
+    }
+    
+    
     let operacionPromUltima = operacionesProm.length - 1;
     //formula calculo precio de moneda cuando toca SL que elegi como dato de entrada en USDT.
     precioMonedaEnSl = operacionesProm[operacionPromUltima].precioMoneda + (operaciones[0].sl / operacionesProm[operacionPromUltima].cantidadMonedas);
@@ -168,14 +193,14 @@ if(operaciones[0].tipoOperacion === "short"){
 
     console.log(`
     SL(${porcentajeDistanciaSl.toFixed(2)}%)
-    Precio moneda al tocar SL: ${precioMonedaEnSl.toFixed(3)}
+    Precio moneda al tocar SL: $${precioMonedaEnSl.toFixed(3)}
     Cantidad de monedas compradas utilizando todas las recompras: ${operacionesProm[operacionPromUltima].cantidadMonedas.toFixed(3)}
-    Monto total invertido utilizando todas las recompras: ${operacionesProm[operacionPromUltima].montoInvertido.toFixed(3)}`);
+    Monto total invertido utilizando todas las recompras: $${operacionesProm[operacionPromUltima].montoInvertido.toFixed(3)}`);
 
 } else if(tipoOperacion === "long"){
     operaciones[0].mostrarDatosOperacion();
 
-    console.log(`#--------PRECIO--------MONEDAS--------USDT`);
+    //console.log(`#--------PRECIO--------MONEDAS--------USDT`);
 
     do{
         i += 1; 
@@ -195,11 +220,11 @@ if(operaciones[0].tipoOperacion === "short"){
         let inversionProm;
         
         if(i === 1){
-            pnl = operaciones[0].cantidadMonedas * (precioMoneda - operaciones[nroOperacionAnterior].precioMoneda);
+            pnl = operaciones[0].cantidadMonedas * (operaciones[nroOperacionAnterior].precioMoneda - precioMoneda);
 
         } else {
             nroOperacionProm = nroOperacionAnterior - 1;
-            pnl = operacionesProm[nroOperacionProm].cantidadMonedas * (precioMoneda - operacionesProm[nroOperacionProm].precioMoneda);
+            pnl = operacionesProm[nroOperacionProm].cantidadMonedas * (operacionesProm[nroOperacionProm].precioMoneda - precioMoneda);
           
         }
 
@@ -221,14 +246,32 @@ if(operaciones[0].tipoOperacion === "short"){
             const operacionProm = new Operacion(nroOperacion, "short", operaciones[0].distanciaPorcentajeRecompraReventa, operaciones[0].aumentoPorcentajeRecompraReventa, operaciones[0].sl, precioMonedaProm, cantidadMonedasProm, inversionProm);
             operacionesProm.push(operacionProm);
             
-            console.log(`${nroOperacion}        $${operaciones[nroOperacion].precioMoneda.toFixed(3)}        ${operaciones[nroOperacion].cantidadMonedas.toFixed(3)}        $${operaciones[nroOperacion].montoInvertido.toFixed(2)}`);
+            //console.log(`${nroOperacion}        $${operaciones[nroOperacion].precioMoneda.toFixed(3)}        ${operaciones[nroOperacion].cantidadMonedas.toFixed(3)}        $${operaciones[nroOperacion].montoInvertido.toFixed(2)}`);
  
         }
         
-        
     } while(pnl <= operaciones[0].sl && i < 8);
 
+    console.log(`#--------PRECIO--------MONEDAS--------USDT`);
+
+    if (mostrarListaInvertida == true){
+        const operacionesAux = operaciones;
+
+        operacionesAux.sort( (operacion, operacion2) => operacion2.numeroOperacion - operacion.numeroOperacion);
+
+        operacionesAux.forEach(operacion => {
+            console.log(`${operacion.numeroOperacion}        $${operacion.precioMoneda.toFixed(3)}        ${operacion.cantidadMonedas.toFixed(3)}        $${operacion.montoInvertido.toFixed(2)}`);
+        });
+
+    } else{
+        operacionesAux.forEach(operacion => {
+            console.log(`${operacion.numeroOperacion}        $${operacion.precioMoneda.toFixed(3)}        ${operacion.cantidadMonedas.toFixed(3)}        $${operacion.montoInvertido.toFixed(2)}`);
+        });
+    }
+    
+    //extraigo la ultima operacion del arreglo
     let operacionPromUltima = operacionesProm.length - 1;
+
     //formula calculo precio de moneda cuando toca SL que elegi como dato de entrada en USDT.
     precioMonedaEnSl = operacionesProm[operacionPromUltima].precioMoneda - (operaciones[0].sl / operacionesProm[operacionPromUltima].cantidadMonedas);
 
@@ -237,9 +280,9 @@ if(operaciones[0].tipoOperacion === "short"){
 
     console.log(`
     SL(${porcentajeDistanciaSl.toFixed(2)}%)
-    Precio moneda al tocar SL: ${precioMonedaEnSl.toFixed(3)}
+    Precio moneda al tocar SL: $${precioMonedaEnSl.toFixed(3)}
     Cantidad de monedas compradas utilizando todas las recompras: ${operacionesProm[operacionPromUltima].cantidadMonedas.toFixed(3)}
-    Monto total invertido utilizando todas las recompras: ${operacionesProm[operacionPromUltima].montoInvertido.toFixed(3)}`);
+    Monto total invertido utilizando todas las recompras: $${operacionesProm[operacionPromUltima].montoInvertido.toFixed(3)}`);
 
 }
 
