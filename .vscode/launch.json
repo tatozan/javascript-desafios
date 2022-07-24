@@ -1,23 +1,19 @@
-{
+/*{
     // Use IntelliSense to learn about possible attributes.
     // Hover to view descriptions of existing attributes.
     // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
     "configurations": [
-
-    
-        
-
         {
             "name": "Launch Chrome against localhost",
             "request": "launch",
-            "type": "pwa-chrome",
+            "type": "chrome",
             "url": "http://localhost:5501",
             "webRoot": "${workspaceFolder}"
         },
 
         {
-            "type": "pwa-node",
+            "type": "node",
             "request": "launch",
             "name": "Launch Program",
             "skipFiles": [
@@ -26,4 +22,31 @@
             "program": "${file}"
         }
     ]
+}*/
+
+
+
+{
+    // Debugger Tool for Firefox has to be installed: https://github.com/firefox-devtools/vscode-firefox-debug
+    // And Remote has to be enabled: https://developer.mozilla.org/en-US/docs/Tools/Remote_Debugging/Debugging_Firefox_Desktop#enable_remote_debugging
+    "version": "0.2.0",
+    "configurations": [
+
+        {
+            "type": "firefox",
+            "request": "launch",
+            "name": "Launch Firefox against localhost",
+            "url": "http://localhost:5501",
+            "webRoot": "${workspaceFolder}",
+            "enableCRAWorkaround": true,
+            "firefoxExecutable": "C:/Users/tatoz/AppData/Local/Mozilla Firefox/firefox.exe",
+            "reAttach": true,
+            "reloadOnAttach": true,
+            "reloadOnChange": {
+                "watch": "${workspaceFolder}/**/*.ts",
+                "ignore": "**/node_modules/**"
+            }
+        }
+    ]
 }
+

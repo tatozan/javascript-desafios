@@ -66,17 +66,14 @@ class Operacion{
         <p> Tipo de operacion: ${this.tipoOperacion} </p>
         
         `
-
-       
-
     }
 
 }
 
 let tipoOperacion, distanciaPorcentajeRecompraReventa, aumentoPorcentajeRecompraReventa, sl, precioMoneda, cantidadMonedas;
 let montoInvertido;
-let numeroRecomprasTotales;
-let mostrarListaInvertida;
+//let numeroRecomprasTotales;
+//let mostrarListaInvertida;
 
 //contiene las operaciones, de recompra o reventa, incluida compra/venta incial
 const operaciones = [];
@@ -91,12 +88,12 @@ form.addEventListener('submit', (event) => {
     event.preventDefault();
 
     //almaceno el valor de los input del html en variables let
-    tipoOperacion = document.getElementById('tipoOperacion').value;
-    distanciaPorcentajeRecompraReventa = document.getElementById('distanciaPorcentajeRecompraReventa').value;
-    aumentoPorcentajeRecompraReventa = document.getElementById('aumentoPorcentajeRecompraReventa').value;
-    sl = document.getElementById('sl').value;
-    precioMoneda = document.getElementById('precioMoneda').value;
-    cantidadMonedas = document.getElementById('cantidadMonedas').value;
+    tipoOperacion = (document.getElementById('tipoOperacion').value).toLowerCase();
+    distanciaPorcentajeRecompraReventa = parseFloat(document.getElementById('distanciaPorcentajeRecompraReventa').value);
+    aumentoPorcentajeRecompraReventa = parseFloat(document.getElementById('aumentoPorcentajeRecompraReventa').value);
+    sl = parseFloat(document.getElementById('sl').value);
+    precioMoneda = parseFloat(document.getElementById('precioMoneda').value);
+    cantidadMonedas = parseFloat(document.getElementById('cantidadMonedas').value);
 
     //creo el objeto inicial, con los datos que me ingresaron en el html
     const operacion0 = new Operacion(0, tipoOperacion, distanciaPorcentajeRecompraReventa, aumentoPorcentajeRecompraReventa, sl, precioMoneda, cantidadMonedas);
@@ -107,12 +104,12 @@ form.addEventListener('submit', (event) => {
 
     //La calculadora no permite mas que calcular 8 recompras, mas recompras, no se recomienda
 
-    let precioMonedaAcum = 0;
-    let cantidadMonedasAcum = 0;
-    let montoInvertidoAcum = 0;
+    //let precioMonedaAcum = 0;
+    //let cantidadMonedasAcum = 0;
+    //let montoInvertidoAcum = 0;
     let precioMonedaEnSl = 0;
     let porcentajeDistanciaSl = 0;
-    let porcentajeTotalOperaciones = 0;
+    //let porcentajeTotalOperaciones = 0;
     let i = 0;
     let pnl = 0;
 
@@ -174,21 +171,6 @@ form.addEventListener('submit', (event) => {
         } while(pnl <= operaciones[0].sl && i < 8);
 
         console.log(`#--------PRECIO--------MONEDAS--------USDT`);
-
-        /*if (mostrarListaInvertida == true){
-            const operacionesAux = operaciones;
-            
-            operacionesAux.sort( (operacion, operacion2) => operacion2.numeroOperacion - operacion.numeroOperacion);
-
-            operacionesAux.forEach(operacion => {
-                console.log(`${operacion.numeroOperacion}        $${operacion.precioMoneda.toFixed(3)}        ${operacion.cantidadMonedas.toFixed(3)}        $${operacion.montoInvertido.toFixed(2)}`);
-            });
-
-        } else{
-            operaciones.forEach(operacion => {
-                console.log(`${operacion.numeroOperacion}        $${operacion.precioMoneda.toFixed(3)}        ${operacion.cantidadMonedas.toFixed(3)}        $${operacion.montoInvertido.toFixed(2)}`);
-            });
-        }*/
 
         operaciones.forEach(operacion => {
             console.log(`${operacion.numeroOperacion}        $${operacion.precioMoneda.toFixed(3)}        ${operacion.cantidadMonedas.toFixed(3)}        $${operacion.montoInvertido.toFixed(2)}`);
@@ -264,20 +246,9 @@ form.addEventListener('submit', (event) => {
 
         console.log(`#--------PRECIO--------MONEDAS--------USDT`);
 
-        if (mostrarListaInvertida == true){
-            const operacionesAux = operaciones;
-
-            operacionesAux.sort( (operacion, operacion2) => operacion2.numeroOperacion - operacion.numeroOperacion);
-
-            operacionesAux.forEach(operacion => {
-                console.log(`${operacion.numeroOperacion}        $${operacion.precioMoneda.toFixed(3)}        ${operacion.cantidadMonedas.toFixed(3)}        $${operacion.montoInvertido.toFixed(2)}`);
-            });
-
-        } else{
-            operacionesAux.forEach(operacion => {
-                console.log(`${operacion.numeroOperacion}        $${operacion.precioMoneda.toFixed(3)}        ${operacion.cantidadMonedas.toFixed(3)}        $${operacion.montoInvertido.toFixed(2)}`);
-            });
-        }
+        operaciones.forEach(operacion => {
+            console.log(`${operacion.numeroOperacion}        $${operacion.precioMoneda.toFixed(3)}        ${operacion.cantidadMonedas.toFixed(3)}        $${operacion.montoInvertido.toFixed(2)}`);
+        });
         
         //extraigo la ultima operacion del arreglo
         let operacionPromUltima = operacionesProm.length - 1;
@@ -296,25 +267,6 @@ form.addEventListener('submit', (event) => {
 
     }
 });
-    /*
-    tipoOperacion = prompt("Ingrese tipo de operacion short / long").toLowerCase();
-    distanciaPorcentajeRecompraReventa = parseFloat(prompt("Ingrese el porcentaje de distancia de recompra, sin el %"));
-    aumentoPorcentajeRecompraReventa = parseFloat(prompt("Ingrese el porcentaje de aumento por c/ recompra, sin el %"));
-    sl = parseFloat(prompt("Ingrese el monto en USDT que desea perder como maximo en la operacion"));
-    precioMoneda = parseFloat(prompt("Ingrese precio de compra de moneda, la coma es con '.' "));
-    cantidadMonedas = parseFloat(prompt("Ingrese el tamaño de la compra en monedas, la coma es con '.' "));
-    mostrarListaInvertida = prompt("Desea ver las operaciones de mayor a menor? SI - NO").toLowerCase();
-
-    if (mostrarListaInvertida == "si"){
-        mostrarListaInvertida = true;
-    }
-    */
-
-    /*
-    //creo objeto operacion0
-    const operacion0 = new Operacion(0, tipoOperacion, distanciaPorcentajeRecompraReventa, aumentoPorcentajeRecompraReventa, sl, precioMoneda, cantidadMonedas);
-    operaciones.push(operacion0);
-    */
 
 
 
