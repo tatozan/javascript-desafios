@@ -40,9 +40,10 @@ proceso
 //declaro objeto operacion
 class Operacion{
     //constructor de la clase
-    constructor(numeroOperacion = 0, tipoOperacion, distanciaPorcentajeRecompraReventa = 0, aumentoPorcentajeRecompraReventa = 0, sl, precioMoneda = 0, cantidadMonedas = 0, montoInvertido = 0){
+    constructor(numeroOperacion = 0, tipoOperacion, par = "predeterminado", distanciaPorcentajeRecompraReventa = 0, aumentoPorcentajeRecompraReventa = 0, sl, precioMoneda = 0, cantidadMonedas = 0, montoInvertido = 0){
         this.numeroOperacion = numeroOperacion;
         this.tipoOperacion = tipoOperacion;
+        this.par = par.toUpperCase();
         this.distanciaPorcentajeRecompraReventa = distanciaPorcentajeRecompraReventa;
         this.aumentoPorcentajeRecompraReventa = aumentoPorcentajeRecompraReventa;
         this.sl = sl;
@@ -60,6 +61,7 @@ class Operacion{
         const divDatosCompraInicial = document.getElementById('divDatosCompraInicial');
 
         divDatosCompraInicial.innerHTML += `
+        <p> Moneda: ${this.par} </p>
         <p> Precio de compra: $${this.precioMoneda} </p>
         <p> Monto invertido en dolares: $${this.montoInvertido.toFixed(3)} </p>
         <p> Tamaño compra: ${this.cantidadMonedas} monedas </p>
@@ -70,13 +72,16 @@ class Operacion{
 
 }
 
-let tipoOperacion, distanciaPorcentajeRecompraReventa, aumentoPorcentajeRecompraReventa, sl, precioMoneda, cantidadMonedas;
+let tipoOperacion, par, distanciaPorcentajeRecompraReventa, aumentoPorcentajeRecompraReventa, sl, precioMoneda, cantidadMonedas;
 let montoInvertido;
 //let numeroRecomprasTotales;
 //let mostrarListaInvertida;
 
 //contiene las operaciones, de recompra o reventa, incluida compra/venta incial
-const operaciones = [];
+//const operaciones = [];
+
+//compruebo si esta creado mi localStorage, si no esta creado lo creo, y si esta, le envio las operaciones que tenia previamente
+const operaciones = JSON.parse(localStorage.getItem("operaciones")) ?? [];
 
 //contiene todas las operaciones promediadas
 const operacionesProm = [];
@@ -88,7 +93,8 @@ form.addEventListener('submit', (event) => {
     event.preventDefault();
 
     //almaceno el valor de los input del html en variables let
-    tipoOperacion = (document.getElementById('tipoOperacion').value).toLowerCase();
+    tipoOperacion = (document.getElementById('tipoOperacion').value);
+    par = (document.getElementById('par').value);
     distanciaPorcentajeRecompraReventa = parseFloat(document.getElementById('distanciaPorcentajeRecompraReventa').value);
     aumentoPorcentajeRecompraReventa = parseFloat(document.getElementById('aumentoPorcentajeRecompraReventa').value);
     sl = parseFloat(document.getElementById('sl').value);
@@ -96,10 +102,11 @@ form.addEventListener('submit', (event) => {
     cantidadMonedas = parseFloat(document.getElementById('cantidadMonedas').value);
 
     //creo el objeto inicial, con los datos que me ingresaron en el html
-    const operacion0 = new Operacion(0, tipoOperacion, distanciaPorcentajeRecompraReventa, aumentoPorcentajeRecompraReventa, sl, precioMoneda, cantidadMonedas);
+    const operacion0 = new Operacion(0, tipoOperacion, par, distanciaPorcentajeRecompraReventa, aumentoPorcentajeRecompraReventa, sl, precioMoneda, cantidadMonedas);
     operaciones.push(operacion0);
 
     operaciones[0].montoInvertido = precioMoneda * cantidadMonedas;
+
     //operaciones[0].calcularRecomprasReventas(sl, distanciaPorcentajeRecompraReventa);
 
     //La calculadora no permite mas que calcular 8 recompras, mas recompras, no se recomienda
@@ -116,8 +123,6 @@ form.addEventListener('submit', (event) => {
     if(operaciones[0].tipoOperacion === "short"){
 
         operaciones[0].mostrarDatosOperacion();
-
-        //console.log(`#--------PRECIO--------MONEDAS--------USDT`);
 
         do{
             i += 1; 
@@ -146,8 +151,9 @@ form.addEventListener('submit', (event) => {
             }
 
             if(pnl <= operaciones[0].sl){
-                const operacion = new Operacion(nroOperacion, "short", operaciones[0].distanciaPorcentajeRecompraReventa, operaciones[0].aumentoPorcentajeRecompraReventa, operaciones[0].sl, precioMoneda, cantidadMonedas, inversion);    
+                const operacion = new Operacion(nroOperacion, "short", par, operaciones[0].distanciaPorcentajeRecompraReventa, operaciones[0].aumentoPorcentajeRecompraReventa, operaciones[0].sl, precioMoneda, cantidadMonedas, inversion);    
                 operaciones.push(operacion);
+
 
                 if(i === 1){
                     precioMonedaProm = (operaciones[nroOperacionAnterior].montoInvertido + operaciones[nroOperacion].montoInvertido) / (operaciones[nroOperacionAnterior].cantidadMonedas + operaciones[nroOperacion].cantidadMonedas);
@@ -160,21 +166,41 @@ form.addEventListener('submit', (event) => {
                     inversionProm = precioMonedaProm * cantidadMonedasProm;
                 }
 
-                const operacionProm = new Operacion(nroOperacion, "short", operaciones[0].distanciaPorcentajeRecompraReventa, operaciones[0].aumentoPorcentajeRecompraReventa, operaciones[0].sl, precioMonedaProm, cantidadMonedasProm, inversionProm);
+                const operacionProm = new Operacion(nroOperacion, "short", par, operaciones[0].distanciaPorcentajeRecompraReventa, operaciones[0].aumentoPorcentajeRecompraReventa, operaciones[0].sl, precioMonedaProm, cantidadMonedasProm, inversionProm);
                 operacionesProm.push(operacionProm);
-                
-                //console.log(`${nroOperacion}        $${operaciones[nroOperacion].precioMoneda.toFixed(3)}        ${operaciones[nroOperacion].cantidadMonedas.toFixed(3)}        $${operaciones[nroOperacion].montoInvertido.toFixed(2)}`);
-    
             }
             
             
         } while(pnl <= operaciones[0].sl && i < 8);
 
-        console.log(`#--------PRECIO--------MONEDAS--------USDT`);
+        localStorage.setItem("operaciones", JSON.stringify(operaciones));
+
+        const gridOperaciones = document.getElementById('gridOperaciones');
+
+        gridOperaciones.innerHTML += `
+  
+        <div class="row">
+            <div class="col"> # </div>
+            <div class="col"> PRECIO </div>
+            <div class="col"> MONEDA </div>
+            <div class="col"> USDT </div>
+        </div>
+        `
 
         operaciones.forEach(operacion => {
-            console.log(`${operacion.numeroOperacion}        $${operacion.precioMoneda.toFixed(3)}        ${operacion.cantidadMonedas.toFixed(3)}        $${operacion.montoInvertido.toFixed(2)}`);
+            gridOperaciones.innerHTML += `  
+            <div class="row">
+                <div class="col"> ${operacion.numeroOperacion} </div>
+                <div class="col"> $${operacion.precioMoneda.toFixed(3)} </div>
+                <div class="col"> ${operacion.cantidadMonedas.toFixed(3)} </div>
+                <div class="col"> $${operacion.montoInvertido.toFixed(2)} </div>
+            </div>
+            `
         });
+
+        
+
+        
         
         let operacionPromUltima = operacionesProm.length - 1;
         //formula calculo precio de moneda cuando toca SL que elegi como dato de entrada en USDT.
@@ -191,8 +217,6 @@ form.addEventListener('submit', (event) => {
 
     } else if(tipoOperacion === "long"){
         operaciones[0].mostrarDatosOperacion();
-
-        //console.log(`#--------PRECIO--------MONEDAS--------USDT`);
 
         do{
             i += 1; 
@@ -221,7 +245,7 @@ form.addEventListener('submit', (event) => {
             }
 
             if(pnl <= operaciones[0].sl){
-                const operacion = new Operacion(nroOperacion, "long", operaciones[0].distanciaPorcentajeRecompraReventa, operaciones[0].aumentoPorcentajeRecompraReventa, operaciones[0].sl, precioMoneda, cantidadMonedas, inversion);    
+                const operacion = new Operacion(nroOperacion, "long", par, operaciones[0].distanciaPorcentajeRecompraReventa, operaciones[0].aumentoPorcentajeRecompraReventa, operaciones[0].sl, precioMoneda, cantidadMonedas, inversion);    
                 operaciones.push(operacion);
 
                 if(i === 1){
@@ -235,19 +259,33 @@ form.addEventListener('submit', (event) => {
                     inversionProm = precioMonedaProm * cantidadMonedasProm;
                 }
 
-                const operacionProm = new Operacion(nroOperacion, "short", operaciones[0].distanciaPorcentajeRecompraReventa, operaciones[0].aumentoPorcentajeRecompraReventa, operaciones[0].sl, precioMonedaProm, cantidadMonedasProm, inversionProm);
-                operacionesProm.push(operacionProm);
-                
-                //console.log(`${nroOperacion}        $${operaciones[nroOperacion].precioMoneda.toFixed(3)}        ${operaciones[nroOperacion].cantidadMonedas.toFixed(3)}        $${operaciones[nroOperacion].montoInvertido.toFixed(2)}`);
-    
+                const operacionProm = new Operacion(nroOperacion, "long", par, operaciones[0].distanciaPorcentajeRecompraReventa, operaciones[0].aumentoPorcentajeRecompraReventa, operaciones[0].sl, precioMonedaProm, cantidadMonedasProm, inversionProm);
+                operacionesProm.push(operacionProm);    
             }
             
         } while(pnl <= operaciones[0].sl && i < 8);
 
-        console.log(`#--------PRECIO--------MONEDAS--------USDT`);
+        const gridOperaciones = document.getElementById('gridOperaciones');
+
+        gridOperaciones.innerHTML += `
+  
+        <div class="row">
+            <div class="col"> # </div>
+            <div class="col"> PRECIO </div>
+            <div class="col"> MONEDA </div>
+            <div class="col"> USDT </div>
+        </div>
+        `
 
         operaciones.forEach(operacion => {
-            console.log(`${operacion.numeroOperacion}        $${operacion.precioMoneda.toFixed(3)}        ${operacion.cantidadMonedas.toFixed(3)}        $${operacion.montoInvertido.toFixed(2)}`);
+            gridOperaciones.innerHTML += `  
+            <div class="row">
+                <div class="col"> ${operacion.numeroOperacion} </div>
+                <div class="col"> $${operacion.precioMoneda.toFixed(3)} </div>
+                <div class="col"> ${operacion.cantidadMonedas.toFixed(3)} </div>
+                <div class="col"> $${operacion.montoInvertido.toFixed(2)} </div>
+            </div>
+            `
         });
         
         //extraigo la ultima operacion del arreglo

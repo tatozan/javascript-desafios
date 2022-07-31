@@ -14,41 +14,56 @@
         <form id="idForm">
             <div class="mb-3">
                 <label for="tipoOperacion" class="form-label"> Tipo de operacion </label>
-                <input type="text" class="form-control" id="tipoOperacion">
+                <select name="operacion" id="tipoOperacion">
+                    <option selected disabled value=""> SELECT </option>
+                    <option value="short">Short</option>
+                    <option value="long">Long</option>
+                </select>
+
             </div>   
 
             <div class="mb-3">
+                <label for="par" class="form-label"> Recompra, Reventa </label>
+                <input type="text" class="form-control" id="par" placeholder="Moneda/USDT a operar">
+            </div>  
+
+            <div class="mb-3">
                 <label for="distanciaPorcentajeRecompraReventa" class="form-label"> Recompra, Reventa </label>
-                <input type="text" class="form-control" id="distanciaPorcentajeRecompraReventa">
+                <input type="text" class="form-control" id="distanciaPorcentajeRecompraReventa" placeholder="% Recompra / Reventa">
             </div>  
 
             <div class="mb-3">
                 <label for="aumentoPorcentajeRecompraReventa" class="form-label"> Monedas </label>
-                <input type="text" class="form-control" id="aumentoPorcentajeRecompraReventa">
+                <input type="text" class="form-control" id="aumentoPorcentajeRecompraReventa" placeholder="% Aumento por Recompra / Reventa">
             </div> 
 
             <div class="mb-3">
                 <label for="sl" class="form-label"> Stop Loss </label>
-                <input type="text" class="form-control" id="sl">
+                <input type="text" class="form-control" id="sl" placeholder="SL en USDT " >
             </div>  
 
             <div class="mb-3">
                 <label for="precioMoneda" class="form-label"> Precio entrada </label>
-                <input type="text" class="form-control" id="precioMoneda">
+                <input type="text" class="form-control" id="precioMoneda" placeholder="Precio entrada moneda">
             </div>  
 
             <div class="mb-3">
                 <label for="cantidadMonedas" class="form-label"> Monedas </label>
-                <input type="text" class="form-control" id="cantidadMonedas">
+                <input type="text" class="form-control" id="cantidadMonedas" placeholder="Cantidad de monedas en entrada">
             </div>  
 
             <button type="submit" class="btn btn-primary"> CALCULAR </button>
             <br><br>
         </form>
-    </div>
+    
 
-    <div id ="divDatosCompraInicial">
+        <div id ="divDatosCompraInicial">
 
+        </div>
+
+        <div class="container text-center" id="gridOperaciones" >
+
+        </div>
     </div>
     <!-- JavaScript Bundle with Popper -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" crossorigin="anonymous"></script>
