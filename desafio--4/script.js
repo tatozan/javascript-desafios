@@ -78,10 +78,10 @@ let montoInvertido;
 //let mostrarListaInvertida;
 
 //contiene las operaciones, de recompra o reventa, incluida compra/venta incial
-//const operaciones = [];
+const operaciones = [];
 
 //compruebo si esta creado mi localStorage, si no esta creado lo creo, y si esta, le envio las operaciones que tenia previamente
-const operaciones = JSON.parse(localStorage.getItem("operaciones")) ?? [];
+const historialOperaciones = JSON.parse(localStorage.getItem("operacionesHistorial")) ?? [];
 
 //contiene todas las operaciones promediadas
 const operacionesProm = [];
@@ -106,6 +106,8 @@ form.addEventListener('submit', (event) => {
     operaciones.push(operacion0);
 
     operaciones[0].montoInvertido = precioMoneda * cantidadMonedas;
+
+    localStorage.setItem("historialOperaciones", )
 
     //operaciones[0].calcularRecomprasReventas(sl, distanciaPorcentajeRecompraReventa);
 
