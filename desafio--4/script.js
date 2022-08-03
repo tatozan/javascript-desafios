@@ -81,13 +81,22 @@ let montoInvertido;
 const operaciones = [];
 
 //compruebo si esta creado mi localStorage, si no esta creado lo creo, y si esta, le envio las operaciones que tenia previamente
-const historialOperaciones = JSON.parse(localStorage.getItem("operacionesHistorial")) ?? [];
+const operacionesIniciales = JSON.parse(localStorage.getItem("operacionesIniciales")) ?? [];
 
 //contiene todas las operaciones promediadas
 const operacionesProm = [];
 
 const form = document.getElementById('idForm');
 
+const idOperacionesIniciales = document.getElementById("idOperacionesIniciales");
+
+idOperacionesIniciales.addEventListener("click", () => {
+    operacionesIniciales.forEach(operacion => {
+        idOperacionesIniciales.innerHTML += `
+        <li><a class="${operacion}">${operacion.par}</a></li>  
+        `
+    });
+});
 
 form.addEventListener('submit', (event) => {
     event.preventDefault();
@@ -106,8 +115,6 @@ form.addEventListener('submit', (event) => {
     operaciones.push(operacion0);
 
     operaciones[0].montoInvertido = precioMoneda * cantidadMonedas;
-
-    localStorage.setItem("historialOperaciones", )
 
     //operaciones[0].calcularRecomprasReventas(sl, distanciaPorcentajeRecompraReventa);
 
@@ -175,7 +182,10 @@ form.addEventListener('submit', (event) => {
             
         } while(pnl <= operaciones[0].sl && i < 8);
 
-        localStorage.setItem("operaciones", JSON.stringify(operaciones));
+        //guardo datos de mis operaciones para localStorage
+        operacionesIniciales.push(operacion0);
+
+        localStorage.setItem("operacionesIniciales", JSON.stringify(operacionesIniciales));
 
         const gridOperaciones = document.getElementById('gridOperaciones');
 
@@ -199,10 +209,6 @@ form.addEventListener('submit', (event) => {
             </div>
             `
         });
-
-        
-
-        
         
         let operacionPromUltima = operacionesProm.length - 1;
         //formula calculo precio de moneda cuando toca SL que elegi como dato de entrada en USDT.
@@ -267,7 +273,10 @@ form.addEventListener('submit', (event) => {
             
         } while(pnl <= operaciones[0].sl && i < 8);
 
-        const gridOperaciones = document.getElementById('gridOperaciones');
+        //guardo datos de mis operaciones para localStorage
+        operacionesIniciales.push(operacion0);
+
+        localStorage.setItem("operacionesIniciales", JSON.stringify(operacionesIniciales));
 
         gridOperaciones.innerHTML += `
   
