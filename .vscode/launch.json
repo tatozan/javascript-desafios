@@ -31,30 +31,14 @@
     // And Remote has to be enabled: https://developer.mozilla.org/en-US/docs/Tools/Remote_Debugging/Debugging_Firefox_Desktop#enable_remote_debugging
     "version": "0.2.0",
     "configurations": [
-
-
-        {
-            "type": "firefox",
-            "request": "attach",
-            "name": "Attach"
-        },
-        {
-            "type": "firefox",
-            "request": "launch",
-            "reAttach": true,
-            "name": "Launch localhost",
-            "url": "http://localhost/index.html",
-            "webRoot": "${workspaceFolder}"
-        },
-
         {
             "type": "firefox",
             "request": "launch",
             "name": "Launch Firefox against localhost",
-            "url": "http://localhost:5500/desafio--4/",
-            "firefoxExecutable": "C:/Users/tato/AppData/Local/Mozilla Firefox",
+            "url": "http://localhost:5501",
             "webRoot": "${workspaceFolder}",
             "enableCRAWorkaround": true,
+            "firefoxExecutable": "C:/Users/tatoz/AppData/Local/Mozilla Firefox/firefox.exe",
             "reAttach": true,
             "reloadOnAttach": true,
             "reloadOnChange": {
@@ -62,7 +46,6 @@
                 "ignore": "**/node_modules/**"
             }
         }
-
     ]
 }
 

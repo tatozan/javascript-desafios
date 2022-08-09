@@ -23,48 +23,47 @@
             </div>   
 
             <div class="mb-3">
-                <label for="par" class="form-label"> Recompra, Reventa </label>
-                <input type="text" class="form-control" id="par" placeholder="Moneda/USDT a operar">
+                <label for="par" class="form-label"> Moneda/USDT </label>
+                <input type="text" class="form-control" id="par" name="parName" placeholder="Moneda/USDT a operar">
             </div>  
 
             <div class="mb-3">
                 <label for="distanciaPorcentajeRecompraReventa" class="form-label"> Recompra, Reventa </label>
-                <input type="text" class="form-control" id="distanciaPorcentajeRecompraReventa" placeholder="% Recompra / Reventa">
+                <input type="text" class="form-control" id="distanciaPorcentajeRecompraReventa" name="distanciaPorcentajeRecompraReventaName" placeholder="% Recompra / Reventa">
             </div>  
 
             <div class="mb-3">
                 <label for="aumentoPorcentajeRecompraReventa" class="form-label"> Monedas </label>
-                <input type="text" class="form-control" id="aumentoPorcentajeRecompraReventa" placeholder="% Aumento por Recompra / Reventa">
+                <input type="text" class="form-control" id="aumentoPorcentajeRecompraReventa" name="aumentoPorcentajeRecompraReventaName" placeholder="% Aumento por Recompra / Reventa">
             </div> 
 
             <div class="mb-3">
                 <label for="sl" class="form-label"> Stop Loss </label>
-                <input type="text" class="form-control" id="sl" placeholder="SL en USDT " >
+                <input type="text" class="form-control" id="sl" name="slName" placeholder="SL en USDT " >
             </div>  
 
             <div class="mb-3">
                 <label for="precioMoneda" class="form-label"> Precio entrada </label>
-                <input type="text" class="form-control" id="precioMoneda" placeholder="Precio entrada moneda">
+                <input type="text" class="form-control" id="precioMoneda" name="precioMonedaName" placeholder="Precio entrada moneda">
             </div>  
 
             <div class="mb-3">
                 <label for="cantidadMonedas" class="form-label"> Monedas </label>
-                <input type="text" class="form-control" id="cantidadMonedas" placeholder="Cantidad de monedas en entrada">
+                <input type="text" class="form-control" id="cantidadMonedas" name="cantidadMonedasName" placeholder="Cantidad de monedas en entrada">
             </div>  
 
             <button type="submit" class="btn btn-primary"> CALCULAR </button>
 
-            <div class="dropdown">
-                <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                  Historial de operaciones
-                </button>
-                <ul class="dropdown-menu" id="idOperacionesInciales">
-
-                </ul>
-            </div>
-
         </form>
-    
+
+        <div class="dropdown">
+            <button class="btn btn-secondary dropdown-toggle"  id="idBtnDropDown" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                Historial de operaciones
+            </button>
+            <ul class="dropdown-menu" id="idOperacionesInicialesLista">
+
+            </ul>
+        </div>
 
         <div id ="divDatosCompraInicial">
 
