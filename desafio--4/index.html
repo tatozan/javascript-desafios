@@ -51,11 +51,12 @@
                 <label for="cantidadMonedas" class="form-label"> Monedas </label>
                 <input type="text" class="form-control" id="cantidadMonedas" name="cantidadMonedasName" placeholder="Cantidad de monedas en entrada">
             </div>  
-
+            
             <button type="submit" class="btn btn-primary"> CALCULAR </button>
 
         </form>
 
+        <!--
         <div class="dropdown">
             <button class="btn btn-secondary dropdown-toggle"  id="idBtnDropDown" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                 Historial de operaciones
@@ -63,6 +64,13 @@
             <ul class="dropdown-menu" id="idOperacionesInicialesLista">
 
             </ul>
+        </div>
+
+        -->
+
+        <div class="container">
+            <button id="idBtnDropDown" class="btn btn-dark"> Mostrar Historial Operaciones </button>
+            <div id="divOperacionesIniciales" class="row"></div>
         </div>
 
         <div id ="divDatosCompraInicial">

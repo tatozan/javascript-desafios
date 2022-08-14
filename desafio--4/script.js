@@ -70,6 +70,9 @@ class Operacion{
 
 }
 
+//FUNCIONES
+
+//Mostrar operaciones de recompra / reventa
 function mostrarOperaciones(operaciones, gridOperaciones){
     gridOperaciones.innerHTML += `
   
@@ -80,20 +83,21 @@ function mostrarOperaciones(operaciones, gridOperaciones){
         <div class="col"> USDT </div>
     </div>
     `
-    console.log(operaciones);
+
     operaciones.forEach(operacion => {
         console.log(`precio moneda operacion: ${operacion.precioMoneda}`);
         gridOperaciones.innerHTML += `  
         <div class="row">
-        <div class="col"> ${operacion.numeroOperacion} </div>
-        <div class="col"> $${operacion.precioMoneda.toFixed(3)} </div>
-        <div class="col"> ${operacion.cantidadMonedas.toFixed(3)} </div>
-        <div class="col"> $${operacion.montoInvertido.toFixed(2)} </div>
+            <div class="col"> ${operacion.numeroOperacion} </div>
+            <div class="col"> $${operacion.precioMoneda.toFixed(3)} </div>
+            <div class="col"> ${operacion.cantidadMonedas.toFixed(3)} </div>
+            <div class="col"> $${operacion.montoInvertido.toFixed(2)} </div>
         </div>
         `
     });
 }
 
+//Calcular PnL de operaciones, ya sea de short o long
 function calcularPnL(cantidadMonedas, precioMonedaInicial, precioMonedaFinal, tipoOperacion){
     let pnl;
 
@@ -104,43 +108,204 @@ function calcularPnL(cantidadMonedas, precioMonedaInicial, precioMonedaFinal, ti
     }
     
     return pnl;
-        //pnl = operaciones[0].cantidadMonedas * (operaciones[nroOperacionAnterior].precioMoneda - precioMoneda);
-        
+        //pnl = operaciones[0].cantidadMonedas * (operaciones[nroOperacionAnterior].precioMoneda - precioMoneda);      
 }
 
-//compruebo si esta creado mi localStorage, si no esta creado lo creo, y si esta, le envio las operaciones que tenia previamente
-const operacionesIniciales = JSON.parse(localStorage.getItem("operacionesIniciales")) ?? [];
-//console.log(operacionesIniciales);
+//Almacenar array de objetos en localStorage
+function almacenarLocalStorage(index, objectsArray){
+    localStorage.setItem(index, JSON.stringify(objectsArray));
+}
 
-const form = document.getElementById('idForm');
-const idBtnDropDown = document.getElementById("idBtnDropDown");
-const idOperacionesInicialesLista = document.getElementById("idOperacionesInicialesLista");
-const gridOperaciones = document.getElementById("gridOperaciones");
+//comprobar si existe un array de objetos en un indice determinado, si existe lo devuelve, sino, crea un array de objetos vacio
+function comprobarLocalStorage(index){
+    //compruebo si esta creado mi localStorage, si no esta creado lo creo, y si esta, le envio las operaciones que tenia previamente
+    return JSON.parse(localStorage.getItem(index)) ?? [];
+}
 
-idBtnDropDown.addEventListener("click", () => {
+//Calcular precio de moneda por operacion
+function calcularPrecioMoneda(precioMoneda, distanciaPorcentajeRecompraReventa, tipoOperacion){
+    let precioMonedaCalculada = ((precioMoneda * distanciaPorcentajeRecompraReventa) / 100);
 
-    //elimino todos los hijos de la lista, para cuando lo clickee no se repitan
-    idOperacionesInicialesLista.innerHTML = "";
-    console.log(`Operaciones iniciales lista: ${idOperacionesInicialesLista}`);
+    if(tipoOperacion === "short"){
+        precioMonedaCalculada += precioMoneda;
+    } else if(tipoOperacion === "long"){
+        precioMonedaCalculada = -1 * precioMonedaCalculada + precioMoneda;
+    }
+    return precioMonedaCalculada;  
+}
 
-    operacionesIniciales.forEach(operacion => {
-        idOperacionesInicialesLista.innerHTML += `
-        <li><p>${operacion} - ${operacion.par}</p></li>  
+//Calcular cantidad de monedas por operacion
+function calcularCantidadMonedas(cantidadMonedas, aumentoPorcentajeRecompraReventa){
+    return ((cantidadMonedas * aumentoPorcentajeRecompraReventa) / 100) + cantidadMonedas;
+}
+
+//Calcular inversion
+function calcularInversion(precioMoneda, cantidadMonedas){
+    return precioMoneda * cantidadMonedas;
+}
+
+//Calcular porcentaje distancia a SL
+function calcularPorcentajeDistanciaSl(precioMonedaEnSl, precioMoneda, tipoOperacion){
+    let porcentajeDistancia;
+    if(tipoOperacion === "short"){
+        porcentajeDistancia = ((precioMonedaEnSl - precioMoneda) / precioMoneda) * 100;
+    } else if(tipoOperacion === "long"){
+        porcentajeDistancia = ((precioMoneda - precioMonedaEnSl) / precioMoneda) * 100;
+    }
+
+    return porcentajeDistancia;
+    
+}
+
+//Calcular precio de moneda para un sl determinado
+function calcularPrecioMonedaEnSl(precioMoneda, cantidadMonedas, sl){
+    return precioMoneda + (sl / cantidadMonedas);
+}
+
+//Crear HTML de historial de operaciones, dado un div contenedor, y el array de objetos a mostrar
+function crearHTMLHistorialOperaciones(divContenedor, arrayObject){
+    arrayObject.forEach((operacion, indice) => {
+        divContenedor.innerHTML += `
+        <div class="card border-dark mb-3" id="operacion${indice}" style="max-width: 20rem; margin: 4px;">
+            <div class="card-header">${indice}. ${operacion.par}</div>
+            <div class="card-body" id="card-operacion">
+                <p class="card-title"> Precio moneda: ${operacion.precioMoneda}</p>
+                <p class="card-title"> Cantidad monedas: ${operacion.cantidadMonedas}</p>
+                <p class="card-title"> Monto invertido: ${operacion.montoInvertido}</p>
+                <button class="btn btn-danger"> Eliminar operacion </button>
+                <button class="btn btn-danger"> Cargar datos </button>
+            </div>
+        </div>   
         `
     });
+}
+//obtencion elementos del dom
+const operacionesIniciales = comprobarLocalStorage("operacionesIniciales");
+const form = document.getElementById('idForm');
+const idBtnDropDown = document.getElementById("idBtnDropDown");
+//const idOperacionesInicialesLista = document.getElementById("idOperacionesInicialesLista");
+const divOperacionesIniciales = document.getElementById("divOperacionesIniciales");
+const gridOperaciones = document.getElementById("gridOperaciones");
+
+//Historial de operaciones iniciales
+let primerClick = true;
+idBtnDropDown.addEventListener("click", () => {
+
+    if (primerClick == true){
+        primerClick = false;
+        const operacionesIniciales = comprobarLocalStorage("operacionesIniciales");
+
+        //elimino todos los hijos de la lista, para cuando lo clickee no se repitan
+        /*idOperacionesInicialesLista.innerHTML = "";
+
+        operacionesIniciales.forEach((operacion, indice) => {
+            idOperacionesInicialesLista.innerHTML += `
+            <li id=operacion${indice}>
+                <button class="btn btn-dark"> ${operacion.par} </button>
+            </li>
+
+            `
+        });
+
+        operacionesIniciales.forEach((operacion, indice) => {
+            //duda, si es unico el elemento de la fomra operacionID, por que necesito identificarlo con lastElementChild
+            let enlaceOperacion = document.getElementById(`operacion${indice}`).lastElementChild;
+
+            //genero un evento escuchador por cada elemento de la lista
+            enlaceOperacion.addEventListener("click", () => {
+                //Lo recomendable siempre es eliminar el elemento primero en el DOM y luego en el localStorage
+                //utilizo metodo remove(), asi elimino el item de la lista en particular
+                document.getElementById(`operacion${indice}`).remove();
+
+                //ahora eliminamos el elemento del array
+                //recordar que con splice() eliminamos un elemento dado su indice, con slice() copiamos
+                operacionesIniciales.splice(indice, 1);
+
+                //eliminamos el objeto del localStorage
+                localStorage.setItem("operacionesIniciales", JSON.stringify(operacionesIniciales));
+            });
+
+        });
+        */
+        divOperacionesIniciales.innerHTML = "";
+
+        crearHTMLHistorialOperaciones(divOperacionesIniciales, operacionesIniciales);
+       
+        operacionesIniciales.forEach((operacion, indice) => {
+            /*
+            let enlaceOperacion = document.getElementById(`operacion${indice}`).lastElementChild;
+
+            enlaceOperacion.addEventListener("click", () => {
+                document.getElementById(`operacion${indice}`).remove();
+
+                operacionesIniciales.splice(indice, 1);
+
+                localStorage.setItem("operacionesIniciales", JSON.stringify(operacionesIniciales));
+            });
+            */
+            let operacionEliminar = document.getElementById(`operacion${indice}`).lastElementChild.children[3];
+
+            //let operacionEliminar = document.getElementById(`operacion${indice}`).lastElementChild.children
+            let operacionInicialDatos = document.getElementById(`operacion${indice}`).lastElementChild.lastElementChild;
+
+            //Boton cargar datos de operaciones
+            operacionInicialDatos.addEventListener("click", () => {
+
+                document.getElementById("tipoOperacion").value = operacion.tipoOperacion;
+                document.getElementById("par").value = operacion.par;
+                document.getElementById("distanciaPorcentajeRecompraReventa").value = operacion.distanciaPorcentajeRecompraReventa;
+                document.getElementById("aumentoPorcentajeRecompraReventa").value = operacion.aumentoPorcentajeRecompraReventa;
+                document.getElementById("sl").value = operacion.sl;
+                document.getElementById("precioMoneda").value = operacion.precioMoneda;
+                document.getElementById("cantidadMonedas").value = operacion.cantidadMonedas;
+            });
+
+            operacionEliminar.addEventListener("click", () => {
+                document.getElementById(`operacion${indice}`).remove();
+
+                operacionesIniciales.splice(1, indice);
+
+                localStorage.setItem("operacionesIniciales", JSON.stringify(operacionesIniciales));
+            });
+        });
+    } else {
+        primerClick = true;
+        divOperacionesIniciales.innerHTML = "";
+    }
 });
 
 form.addEventListener('submit', (event) => {
     event.preventDefault();
 
     let tipoOperacion, par, distanciaPorcentajeRecompraReventa, aumentoPorcentajeRecompraReventa, sl, precioMoneda, cantidadMonedas;
-    let montoInvertido;
     //let numeroRecomprasTotales;
     //let mostrarListaInvertida;
 
+        //metodo de js que extrae la informacion de los campos de un formulario objetivo
+        let dataForm = new FormData(event.target);
+
+        //hago este paso para que sea mas legible pero podria directamente crear el objeto con los datos que vengan del objeto dataForm
+        tipoOperacion = dataForm.get("operacion");
+        par = dataForm.get("parName");
+        distanciaPorcentajeRecompraReventa = parseFloat(dataForm.get("distanciaPorcentajeRecompraReventaName"));
+        aumentoPorcentajeRecompraReventa = parseFloat(dataForm.get("aumentoPorcentajeRecompraReventaName"));
+        sl = parseFloat(dataForm.get("slName"));
+        precioMoneda = parseFloat(dataForm.get("precioMonedaName"));
+        cantidadMonedas = parseFloat(dataForm.get("cantidadMonedasName"));
+
+        //almaceno el valor de los input del html en variables let
+        /*tipoOperacion = (document.getElementById('tipoOperacion').value);
+        par = (document.getElementById('par').value).toUpperCase();
+        distanciaPorcentajeRecompraReventa = parseFloat(document.getElementById('distanciaPorcentajeRecompraReventa').value);
+        aumentoPorcentajeRecompraReventa = parseFloat(document.getElementById('aumentoPorcentajeRecompraReventa').value);
+        sl = parseFloat(document.getElementById('sl').value);
+        precioMoneda = parseFloat(document.getElementById('precioMoneda').value);
+
+        cantidadMonedas = parseFloat(document.getElementById('cantidadMonedas').value);*/
+
     //compruebo si mi localStorage hay almacenadas operaciones, sino creo una nueva
-    //la coloco aqui tambien porque si
-    const operacionesIniciales = JSON.parse(localStorage.getItem("operacionesIniciales")) ?? [];
+    //la coloco aqui tambien porque si...
+    const operacionesIniciales = comprobarLocalStorage("operacionesIniciales");
 
     //contiene las operaciones, de recompra o reventa, incluida compra/venta incial
     const operaciones = [];
@@ -152,28 +317,6 @@ form.addEventListener('submit', (event) => {
 
     const gridOperaciones = document.getElementById("gridOperaciones");
     gridOperaciones.innerHTML = "";
-
-    //metodo de js que extrae la informacion de los campos de un formulario objetivo
-    let dataForm = new FormData(event.target);
-
-    //hago este paso para que sea mas legible pero podria directamente crear el objeto con los datos que vengan del objeto dataForm
-    tipoOperacion = dataForm.get("operacion");
-    par = dataForm.get("parName");
-    distanciaPorcentajeRecompraReventa = parseFloat(dataForm.get("distanciaPorcentajeRecompraReventaName"));
-    aumentoPorcentajeRecompraReventa = parseFloat(dataForm.get("aumentoPorcentajeRecompraReventaName"));
-    sl = parseFloat(dataForm.get("slName"));
-    precioMoneda = parseFloat(dataForm.get("precioMonedaName"));
-    cantidadMonedas = parseFloat(dataForm.get("cantidadMonedasName"));
-
-    //almaceno el valor de los input del html en variables let
-    /*tipoOperacion = (document.getElementById('tipoOperacion').value);
-    par = (document.getElementById('par').value).toUpperCase();
-    distanciaPorcentajeRecompraReventa = parseFloat(document.getElementById('distanciaPorcentajeRecompraReventa').value);
-    aumentoPorcentajeRecompraReventa = parseFloat(document.getElementById('aumentoPorcentajeRecompraReventa').value);
-    sl = parseFloat(document.getElementById('sl').value);
-    precioMoneda = parseFloat(document.getElementById('precioMoneda').value);
-
-    cantidadMonedas = parseFloat(document.getElementById('cantidadMonedas').value);*/
 
     //creo el objeto inicial, con los datos que me ingresaron en el html
     const operacion0 = new Operacion(0, tipoOperacion, par, distanciaPorcentajeRecompraReventa, aumentoPorcentajeRecompraReventa, sl, precioMoneda, cantidadMonedas);
@@ -194,8 +337,7 @@ form.addEventListener('submit', (event) => {
     let i = 0;
     let pnl = 0;
 
-    if(operaciones[0].tipoOperacion === "short"){
-
+    if(operaciones[0].tipoOperacion === "short" || operaciones[0].tipoOperacion === "long"){
         operaciones[0].mostrarDatosOperacionInicial();
 
         do{
@@ -206,9 +348,9 @@ form.addEventListener('submit', (event) => {
             let nroOperacionProm = i;
 
             //datos Recompras
-            let precioMoneda = ((operaciones[nroOperacionAnterior].precioMoneda * operaciones[nroOperacionAnterior].distanciaPorcentajeRecompraReventa) / 100) + operaciones[nroOperacionAnterior].precioMoneda;
-            let cantidadMonedas = ((operaciones[nroOperacionAnterior].cantidadMonedas * operaciones[nroOperacionAnterior].aumentoPorcentajeRecompraReventa) / 100) + operaciones[nroOperacionAnterior].cantidadMonedas;
-            let inversion =  precioMoneda * cantidadMonedas;
+            let precioMoneda = calcularPrecioMoneda(operaciones[nroOperacionAnterior].precioMoneda, operaciones[nroOperacionAnterior].distanciaPorcentajeRecompraReventa, operaciones[0].tipoOperacion);
+            let cantidadMonedas = calcularCantidadMonedas(operaciones[nroOperacionAnterior].cantidadMonedas, operaciones[nroOperacionAnterior].aumentoPorcentajeRecompraReventa);
+            let inversion = calcularInversion(precioMoneda, cantidadMonedas);
 
             //Datos operaciones Promediadas
             let cantidadMonedasProm;
@@ -227,21 +369,22 @@ form.addEventListener('submit', (event) => {
             }
 
             if(pnl <= operaciones[0].sl){
-                const operacion = new Operacion(nroOperacion, "short", par, operaciones[0].distanciaPorcentajeRecompraReventa, operaciones[0].aumentoPorcentajeRecompraReventa, operaciones[0].sl, precioMoneda, cantidadMonedas, inversion);    
+                const operacion = new Operacion(nroOperacion, operaciones[0].tipoOperacion, par, operaciones[0].distanciaPorcentajeRecompraReventa, operaciones[0].aumentoPorcentajeRecompraReventa, operaciones[0].sl, precioMoneda, cantidadMonedas, inversion);    
                 operaciones.push(operacion);
 
                 if(i === 1){
                     precioMonedaProm = (operaciones[nroOperacionAnterior].montoInvertido + operaciones[nroOperacion].montoInvertido) / (operaciones[nroOperacionAnterior].cantidadMonedas + operaciones[nroOperacion].cantidadMonedas);
                     cantidadMonedasProm = operaciones[nroOperacionAnterior].cantidadMonedas + operaciones[nroOperacion].cantidadMonedas;
-                    inversionProm = precioMonedaProm * cantidadMonedasProm;
+
 
                 } else{
                     precioMonedaProm = (operacionesProm[nroOperacionProm].montoInvertido + operaciones[nroOperacion].montoInvertido) / (operacionesProm[nroOperacionProm].cantidadMonedas + operaciones[nroOperacion].cantidadMonedas);
                     cantidadMonedasProm = operacionesProm[nroOperacionProm].cantidadMonedas + operaciones[nroOperacion].cantidadMonedas;
-                    inversionProm = precioMonedaProm * cantidadMonedasProm;
                 }
 
-                const operacionProm = new Operacion(nroOperacion, "short", par, operaciones[0].distanciaPorcentajeRecompraReventa, operaciones[0].aumentoPorcentajeRecompraReventa, operaciones[0].sl, precioMonedaProm, cantidadMonedasProm, inversionProm);
+                inversionProm = calcularInversion(precioMonedaProm, cantidadMonedasProm);
+
+                const operacionProm = new Operacion(nroOperacion, operaciones[0].tipoOperacion, par, operaciones[0].distanciaPorcentajeRecompraReventa, operaciones[0].aumentoPorcentajeRecompraReventa, operaciones[0].sl, precioMonedaProm, cantidadMonedasProm, inversionProm);
                 operacionesProm.push(operacionProm);
             }
             
@@ -251,7 +394,8 @@ form.addEventListener('submit', (event) => {
         //guardo datos de mis operaciones para localStorage
         operacionesIniciales.push(operacion0);
 
-        localStorage.setItem("operacionesIniciales", JSON.stringify(operacionesIniciales));
+        //localStorage.setItem("operacionesIniciales", JSON.stringify(operacionesIniciales));
+        almacenarLocalStorage("operacionesIniciales", operacionesIniciales);
 
         mostrarOperaciones(operaciones, gridOperaciones);
 
@@ -277,105 +421,14 @@ form.addEventListener('submit', (event) => {
         });
         */
 
-        let operacionPromUltima = operacionesProm.length - 1;
-        //formula calculo precio de moneda cuando toca SL que elegi como dato de entrada en USDT.
-        precioMonedaEnSl = operacionesProm[operacionPromUltima].precioMoneda + (operaciones[0].sl / operacionesProm[operacionPromUltima].cantidadMonedas);
-
-        //formula calculo distancia de mi operacion #0 al monto de SL que quiero perder, en porcentaje
-        porcentajeDistanciaSl = ((precioMonedaEnSl - operaciones[0].precioMoneda) / operaciones[0].precioMoneda) * 100;
-
-        console.log(`
-        SL(${porcentajeDistanciaSl.toFixed(2)}%)
-        Precio moneda al tocar SL: $${precioMonedaEnSl.toFixed(3)}
-        Cantidad de monedas compradas utilizando todas las recompras: ${operacionesProm[operacionPromUltima].cantidadMonedas.toFixed(3)}
-        Monto total invertido utilizando todas las recompras: $${operacionesProm[operacionPromUltima].montoInvertido.toFixed(3)}`);
-
-    } else if(tipoOperacion === "long"){
-        operaciones[0].mostrarDatosOperacionInicial();
-
-        do{
-            i += 1; 
-            //creo una variable nroOperacion y nroOperacionAnterior para que sea mas legible
-            let nroOperacion = i;
-            let nroOperacionAnterior = i-1;
-            let nroOperacionProm = i;
-
-            //datos Recompras
-            let precioMoneda = operaciones[nroOperacionAnterior].precioMoneda - ((operaciones[nroOperacionAnterior].precioMoneda * operaciones[nroOperacionAnterior].distanciaPorcentajeRecompraReventa) / 100);
-            let cantidadMonedas = ((operaciones[nroOperacionAnterior].cantidadMonedas * operaciones[nroOperacionAnterior].aumentoPorcentajeRecompraReventa) / 100) + operaciones[nroOperacionAnterior].cantidadMonedas;
-            let inversion =  precioMoneda * cantidadMonedas;
-
-            //Datos operaciones Promediadas
-            let cantidadMonedasProm;
-            let precioMonedaProm;
-            let inversionProm;
-            
-            if(i === 1){
-                pnl = calcularPnL(operaciones[0].cantidadMonedas, operaciones[nroOperacionAnterior].precioMoneda, precioMoneda, operaciones[0].tipoOperacion);
-                //pnl = operaciones[0].cantidadMonedas * (operaciones[nroOperacionAnterior].precioMoneda - precioMoneda);
-
-            } else {
-                nroOperacionProm = nroOperacionAnterior - 1;
-                pnl = calcularPnL(operacionesProm[nroOperacionProm].cantidadMonedas, operacionesProm[nroOperacionProm].precioMoneda, precioMoneda, operaciones[0].tipoOperacion);
-                //pnl = operacionesProm[nroOperacionProm].cantidadMonedas * (operacionesProm[nroOperacionProm].precioMoneda - precioMoneda);
-            
-            }
-
-            if(pnl <= operaciones[0].sl){
-                const operacion = new Operacion(nroOperacion, "long", par, operaciones[0].distanciaPorcentajeRecompraReventa, operaciones[0].aumentoPorcentajeRecompraReventa, operaciones[0].sl, precioMoneda, cantidadMonedas, inversion);    
-                operaciones.push(operacion);
-
-                if(i === 1){
-                    precioMonedaProm = (operaciones[nroOperacionAnterior].montoInvertido + operaciones[nroOperacion].montoInvertido) / (operaciones[nroOperacionAnterior].cantidadMonedas + operaciones[nroOperacion].cantidadMonedas);
-                    cantidadMonedasProm = operaciones[nroOperacionAnterior].cantidadMonedas + operaciones[nroOperacion].cantidadMonedas;
-                    inversionProm = precioMonedaProm * cantidadMonedasProm;
-
-                } else{
-                    precioMonedaProm = (operacionesProm[nroOperacionProm].montoInvertido + operaciones[nroOperacion].montoInvertido) / (operacionesProm[nroOperacionProm].cantidadMonedas + operaciones[nroOperacion].cantidadMonedas);
-                    cantidadMonedasProm = operacionesProm[nroOperacionProm].cantidadMonedas + operaciones[nroOperacion].cantidadMonedas;
-                    inversionProm = precioMonedaProm * cantidadMonedasProm;
-                }
-
-                const operacionProm = new Operacion(nroOperacion, "long", par, operaciones[0].distanciaPorcentajeRecompraReventa, operaciones[0].aumentoPorcentajeRecompraReventa, operaciones[0].sl, precioMonedaProm, cantidadMonedasProm, inversionProm);
-                operacionesProm.push(operacionProm);    
-            }
-            
-        } while(pnl <= operaciones[0].sl && i < 8);
-
-        //guardo datos de mis operaciones para localStorage
-        operacionesIniciales.push(operacion0);
-
-        localStorage.setItem("operacionesIniciales", JSON.stringify(operacionesIniciales));
-
-        gridOperaciones.innerHTML += `
-  
-        <div class="row">
-            <div class="col"> # </div>
-            <div class="col"> PRECIO </div>
-            <div class="col"> MONEDA </div>
-            <div class="col"> USDT </div>
-        </div>
-        `
-
-        operaciones.forEach(operacion => {
-            gridOperaciones.innerHTML += `  
-            <div class="row">
-                <div class="col"> ${operacion.numeroOperacion} </div>
-                <div class="col"> $${operacion.precioMoneda.toFixed(3)} </div>
-                <div class="col"> ${operacion.cantidadMonedas.toFixed(3)} </div>
-                <div class="col"> $${operacion.montoInvertido.toFixed(2)} </div>
-            </div>
-            `
-        });
-        
         //extraigo la ultima operacion del arreglo
         let operacionPromUltima = operacionesProm.length - 1;
 
         //formula calculo precio de moneda cuando toca SL que elegi como dato de entrada en USDT.
-        precioMonedaEnSl = operacionesProm[operacionPromUltima].precioMoneda - (operaciones[0].sl / operacionesProm[operacionPromUltima].cantidadMonedas);
+        precioMonedaEnSl = calcularPrecioMonedaEnSl(operacionesProm[operacionPromUltima].precioMoneda, operacionesProm[operacionPromUltima].cantidadMonedas, operaciones[0].sl);
 
         //formula calculo distancia de mi operacion #0 al monto de SL que quiero perder, en porcentaje
-        porcentajeDistanciaSl = ((operaciones[0].precioMoneda - precioMonedaEnSl) / operaciones[0].precioMoneda) * 100;
+        porcentajeDistanciaSl = calcularPorcentajeDistanciaSl(precioMonedaEnSl, operaciones[0].precioMoneda, operaciones[0].tipoOperacion);
 
         console.log(`
         SL(${porcentajeDistanciaSl.toFixed(2)}%)
