@@ -262,6 +262,18 @@ idBtnDropDown.addEventListener("click", () => {
             });
 
             operacionEliminar.addEventListener("click", () => {
+                Swal.fire({
+                    title: 'Desea eliminar la operacion?',
+                    showDenyButton: false,
+                    showCancelButton: true,
+                    confirmButtonText: 'Si',
+                    denyButtonText: `No`,
+                  }).then((result) => {
+                    /* Read more about isConfirmed, isDenied below */
+                    if (result.isConfirmed) {
+                      Swal.fire('Operacion Eliminada', '', 'success')
+                    }
+                  })
                 document.getElementById(`operacion${indice}`).remove();
 
                 operacionesIniciales.splice(1, indice);
