@@ -271,14 +271,15 @@ idBtnDropDown.addEventListener("click", () => {
                   }).then((result) => {
                     /* Read more about isConfirmed, isDenied below */
                     if (result.isConfirmed) {
-                      Swal.fire('Operacion Eliminada', '', 'success')
+                        document.getElementById(`operacion${indice}`).remove();
+
+                        operacionesIniciales.splice(1, indice);
+            
+                        localStorage.setItem("operacionesIniciales", JSON.stringify(operacionesIniciales));
+                        
+                        Swal.fire('Operacion Eliminada', '', 'success')
                     }
                   })
-                document.getElementById(`operacion${indice}`).remove();
-
-                operacionesIniciales.splice(1, indice);
-
-                localStorage.setItem("operacionesIniciales", JSON.stringify(operacionesIniciales));
             });
         });
     } else {
