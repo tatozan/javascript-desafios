@@ -70,6 +70,25 @@ class Operacion{
 
 //FUNCIONES
 
+
+//Funcion asincrona que crea elemento del dom para mostrar todas las monedas almacenadas en un archivo json
+async function mostrarMonedas(){
+    const monedas = await fetch("./json/monedas.json");
+    const monedasParseadas = await monedas.json();
+
+    par.innerHTML = "";
+
+    par.innerHTML += `
+        <option selected disabled value=""> SELECT </option>
+    `
+    monedasParseadas.forEach((moneda, indice) => {
+        par.innerHTML += `
+        <option value="${moneda.symbol}">${moneda.symbol}</option>
+
+        `
+    });
+}
+
 //Mostrar operaciones de recompra / reventa
 function mostrarOperaciones(operaciones, gridOperaciones){
     gridOperaciones.innerHTML += `
@@ -298,6 +317,10 @@ botonMostrarOperacionesIniciales.addEventListener("click", () => {
         primerClick = true;
         divOperacionesIniciales.innerHTML = "";
     }
+});
+
+par.addEventListener("click", () => {
+    mostrarMonedas();
 });
 
 form.addEventListener("submit", (event) => {
